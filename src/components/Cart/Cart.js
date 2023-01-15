@@ -6,8 +6,12 @@ import CartContext from '../../store/cart-context';
 import CartItem from './CartItem';
 function Cart(props) {
     const cartCtx=useContext(CartContext);
-    const cartItemRemoveHandler=id=>{};
-    const cartItemAddHandler=item=>{};
+    const cartItemRemoveHandler=id=>{
+        cartCtx.removeItem(id);
+    };
+    const cartItemAddHandler=item=>{
+        cartCtx.addItem({...item,amount:1});
+    };
     const totalAmount=`$${cartCtx.totalAmount.toFixed(2)}`;
     const hasItems=cartCtx.items.length>0;
     const cartItems=<ul className={classes['cart-items']}>{cartCtx.items.map((item)=>(
