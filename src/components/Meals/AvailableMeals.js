@@ -5,10 +5,12 @@ import MealItem from './MealItem/MealItem';
 
 function AvailableMeals() {
     const[meals,setMeals]=useState([]);
+    const[isLoading,setIsLoading]=useState(true);
+    const[httpError,setHttpError]=useState();
     //In the useEffect we are not using async await as there can be a clean up function that need to be tun synchronusly.
     useEffect(()=>{
         const fetchMeals=async ()=>{
-            const response=await fetch('https://react-http-practice-a4548-default-rtdb.firebaseio.com/meals.json');
+            const response = await fetch('https://react-http-practice-a4548-default-rtdb.firebaseio.com/meals.json');
             const responseData=await response.json();
             const loadedMeals=[];
             for(const key in responseData){
@@ -21,11 +23,28 @@ function AvailableMeals() {
             }
 
             setMeals(loadedMeals);
+            setIsLoading(false);
         }
-        fetchMeals();
+        fetchMeals().catch((error)=>{
+            setIsLoading(false);
+            setHttpError(error.message);
+        })
     },[]);
 
-
+    if(isLoading){
+        return(
+            <section className={classes.MealsLoading}>
+                <p>Loading...</p>
+            </section>
+        )
+    }
+    if(httpError){
+        return(
+            <section className={classes.MealsError}>
+                <p>{httpError}</p>
+            </section>
+        )
+    }
     const mealsList = meals.map(meal => <MealItem key={meal.id} id={meal.id} name={meal.name} description={meal.description} price={meal.price} />);
     return (
         <section className={classes.meals}>
